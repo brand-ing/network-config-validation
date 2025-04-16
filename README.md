@@ -24,3 +24,17 @@ The system generates a report with security scores and specific recommendations
 
 
 **Datasets used**
+
+secrepo
+- dhcp traffic (DHCP stands for Dynamic Host Configuration Protocol )
+- Yahoo! Password Frequency Corpus (???)
+- pcap - packet capture (if this turns into network intrusion)
+TII-SSRC-23 Dataset
+Gotham Dataset 2025
+ZYELL-NCTU NetTraffic-1.0
+IoT Inspector Dataset
+Questions: How is this data captured? 
+
+
+CVE
+STIGs
