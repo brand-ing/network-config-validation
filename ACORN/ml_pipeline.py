@@ -21,45 +21,70 @@ from sklearn.pipeline import Pipeline
 from sklearn.feature_selection import SelectFromModel
 import seaborn as sns
 
+
 # Constants
 MODEL_PATH = "security_model.pkl"
 RESULTS_DIR = "model_evaluation"
 
 def load_dataset(csv_path):
     """
-    Load and prepare the dataset for training.
-    
-    Args:
-        csv_path: Path to the features CSV file
-        
-    Returns:
-        X_train, X_test, y_train, y_test
+    Load and prepare the dataset for training with improved error handling.
     """
     print(f"Loading dataset from {csv_path}...")
     
-    # Load the data
-    df = pd.read_csv(csv_path)
+    # Check if file exists
+    if not os.path.exists(csv_path):
+        raise FileNotFoundError(f"Dataset file not found: {csv_path}")
     
-    # Check if 'secure' column exists
-    if 'secure' not in df.columns:
-        raise ValueError("Dataset must contain a 'secure' column with labels")
+    # Load the data with error handling
+    try:
+        df = pd.read_csv(csv_path)
+        print(f"DataFrame shape: {df.shape}")
+        print(f"DataFrame columns: {df.columns.tolist()}")
+        
+        # Check if DataFrame is empty
+        if df.empty:
+            raise ValueError("Dataset is empty")
+        
+        # Check if 'secure' column exists
+        if 'secure' not in df.columns:
+            raise ValueError("Dataset must contain a 'secure' column with labels")
+        
+        # Check for NaN values
+        nan_count = df.isna().sum().sum()
+        if nan_count > 0:
+            print(f"Warning: Dataset contains {nan_count} NaN values")
+        
+        # Print value counts for the target
+        print(f"Target distribution:\n{df['secure'].value_counts()}")
+        
+        # Drop non-feature columns
+        feature_cols = [col for col in df.columns if col not in ['secure', 'filename']]
+        
+        if not feature_cols:
+            raise ValueError("No feature columns found in dataset")
+        
+        # Split features and target
+        X = df[feature_cols]
+        y = df['secure']
+        
+        # Split into training and test sets
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=0.3, random_state=42, stratify=y
+        )
+        
+        print(f"Dataset loaded: {len(X_train)} training samples, {len(X_test)} test samples")
+        print(f"Features: {', '.join(feature_cols)}")
+        
+        return X_train, X_test, y_train, y_test, feature_cols
     
-    # Drop non-feature columns
-    feature_cols = [col for col in df.columns if col not in ['secure', 'filename']]
-    
-    # Split features and target
-    X = df[feature_cols]
-    y = df['secure']
-    
-    # Split into training and test sets
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, random_state=42, stratify=y
-    )
-    
-    print(f"Dataset loaded: {len(X_train)} training samples, {len(X_test)} test samples")
-    print(f"Features: {', '.join(feature_cols)}")
-    
-    return X_train, X_test, y_train, y_test, feature_cols
+    except Exception as e:
+        print(f"Error loading dataset: {e}")
+        print("Contents of the dataset file:")
+        with open(csv_path, 'r') as f:
+            print(f.read(1000))  # Print first 1000 chars for debugging
+        raise
+
 
 def train_basic_model(X_train, y_train):
     """

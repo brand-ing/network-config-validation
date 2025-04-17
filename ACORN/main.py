@@ -19,7 +19,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 
 # Import local modules
-from ACORN.parser import parse_cisco_config
+from config_parser import parse_cisco_config
 from ACORN.feature_extraction import extract_features
 from rule_checker import check_telnet, check_password, check_acl, check_snmp  # Import all rule checkers
 from generate_report import generate_report

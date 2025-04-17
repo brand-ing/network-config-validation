@@ -167,7 +167,7 @@ def generate_training_data(config_files, labeled_secure=None):
         Pandas DataFrame with features and target labels
     """
     import pandas as pd
-    from parser import parse_cisco_config
+    from ACORN.config_parser import parse_cisco_config
     
     data = []
     

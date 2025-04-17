@@ -12,7 +12,7 @@ import random
 import argparse
 import pandas as pd
 from ACORN.feature_extraction import extract_features
-from ACORN.parser import parse_cisco_config
+from ACORN.config_parser import parse_cisco_config
 
 # Directory for generated configs
 CONFIG_DIR = "training_configs"
@@ -316,7 +316,7 @@ def generate_dataset(num_configs, output_csv="config_features.csv"):
         security_labels[os.path.basename(filename)] = is_secure
     
     # Extract features from all configs
-    from ACORN.parser import parse_cisco_config
+    from ACORN.config_parser import parse_cisco_config
     from ACORN.feature_extraction import extract_features
     
     data = []

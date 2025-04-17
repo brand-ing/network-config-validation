@@ -1,0 +1,10 @@
+name: netsec
+channels:
+  - https://repo.anaconda.com/pkgs/main
+  - https://repo.anaconda.com/pkgs/r
+dependencies:
+  - numpy
+  - pandas
+  - python=3.9
+  - scikit-learn
+prefix: /home/cell/anaconda3/envs/netsec
