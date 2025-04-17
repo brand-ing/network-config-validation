@@ -20,13 +20,15 @@ from sklearn.model_selection import train_test_split
 
 # Import local modules
 from config_parser import parse_cisco_config
-from ACORN.feature_extraction import extract_features
+from feature_extraction import extract_features
 from rule_checker import check_telnet, check_password, check_acl, check_snmp  # Import all rule checkers
 from generate_report import generate_report
 
 # Constants
 MODEL_PATH = "security_model.pkl"
 OUTPUT_DIR = "reports"
+
+
 
 def analyze_config(config_file, model=None):
     """
@@ -56,8 +58,15 @@ def analyze_config(config_file, model=None):
     
     # Calculate security score
     if model:
-        # Convert features dict to DataFrame with one row
-        feature_df = pd.DataFrame([features])
+        # Get expected feature names from model
+        if hasattr(model, 'feature_names_in_'):
+            expected_features = model.feature_names_in_
+            
+            # Create DataFrame with expected features
+            feature_df = pd.DataFrame({feature: [features.get(feature, 0)] for feature in expected_features})
+        else:
+            # If model doesn't have feature_names_in_, just use all extracted features
+            feature_df = pd.DataFrame([features])
         
         # Get security score from model (probability of being secure)
         security_score = model.predict_proba(feature_df)[0][1] * 10
@@ -213,6 +222,8 @@ def main():
     
     if not (args.train or args.file or args.dir):
         parser.print_help()
+
+    
 
 if __name__ == "__main__":
     main()
